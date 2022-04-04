@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "815348879371",
+    "project_id": "unimeetdong",
+    "storage_bucket": "unimeetdong.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815348879371:android:7187b645d3d0f578b9b70e",
+        "android_client_info": {
+          "package_name": "com.dongpakka.uni_meet_dong"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "815348879371-s0mmt0iaousgnis5unpmtpfg1v40522l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dongpakka.uni_meet_dong",
+            "certificate_hash": "fe806dfb5ea8120ef25d8b7255b6a21d5612eaa8"
+          }
+        },
+        {
+          "client_id": "815348879371-qav1v43alslon9g9rss24v9gfc46s5q3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjAQ-ZwL1rGLPBX5NPdX_tzPVVj5_QRH8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815348879371-qav1v43alslon9g9rss24v9gfc46s5q3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
