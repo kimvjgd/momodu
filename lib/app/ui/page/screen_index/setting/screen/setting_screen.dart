@@ -1,10 +1,42 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:uni_meet_dong/app/controller/auth_controller.dart';
+import 'package:uni_meet_dong/app/data/model/app_user.dart';
+import 'package:uni_meet_dong/root_page.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
 
   @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen> {
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  @override
   Widget build(BuildContext context) {
-    return Container(child: Text('Setting Screen'),);
+    return Scaffold(
+      appBar: AppBar(
+
+      ),
+      body: Center(
+        child: TextButton(child: Text('Log Out'),
+        onPressed: signOut,
+        ),
+      ),
+    );
+  }
+
+
+  // TextButton(child: Text('Log Out'),
+  // onPressed: signOut,
+  // )
+
+  Future<void> signOut() async {
+    AuthController.to.signOut();
+    await auth.signOut();
+    Get.to(()=>RootPage());
   }
 }

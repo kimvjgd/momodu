@@ -7,11 +7,13 @@ class PostController extends GetxController{
 
   @override
   void onInit() {
-    _loadPostList();
+    loadPostList();
     super.onInit();
   }
 
-  void _loadPostList() async {
+  void loadPostList() async {
+    if(postList.isNotEmpty) postList.clear();
+
     var myList = await PostRepository.loadPostList();
     postList.addAll(myList);
   }

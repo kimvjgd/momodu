@@ -14,7 +14,7 @@ class UserRepository {
 
   static Future<bool> signup(AppUser user)async {
     try{
-      await FirebaseFirestore.instance.collection('users').add(user.toMap());
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(user.toMap());
       return true;
     }catch(e) {
       return false;

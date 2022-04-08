@@ -10,8 +10,21 @@ class PostRepository {
   // factory PostRepository() => _postRepository;
   // PostRepository._internal();
 
-  static Future<void> updatePost(Post postData) async {
-    await FirebaseFirestore.instance.collection('posts').add(postData.toMap());
+  static Future<void> createPost(
+      {required String title, required String content, required String place, required int headCount, required DateTime createdDate, required List commentList, required String host }) async {
+    DocumentReference postRef = await FirebaseFirestore.instance.collection('posts').doc();
+    Post postData = Post(
+        title: title,
+        postKey: postRef.id,
+        content: content,
+        place: place,
+        headCount: headCount,
+        createdDate: createdDate,
+        commentList: commentList,
+        host: host,
+        numComments: 0);
+    await postRef
+        .set(postData.toMap());
   }
 
   static Future<List<Post>> loadPostList() async {
@@ -19,10 +32,6 @@ class PostRepository {
         .collection('posts')
         .orderBy(KEY_POST_CREATEDDATE, descending: true).limit(10);
     var data = await document.get();
-    return data.docs.map<Post>((e)=>Post.fromJson(e.id, e.data())).toList();
-
+    return data.docs.map<Post>((e) => Post.fromJson(e.id, e.data())).toList();
   }
-
-
-
 }

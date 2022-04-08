@@ -13,6 +13,10 @@ class AuthController extends GetxController {
   Rx<AppUser> user = AppUser().obs;
   RxString name = ''.obs;
 
+  void signOut() {
+    user.value = AppUser();
+  }
+
 
   Future<AppUser?> loginUser(String uid) async {
     var userData = await UserRepository.loginUserByUid(uid);

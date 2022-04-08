@@ -5,6 +5,6 @@ class AlarmScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: Text('없어지거나 ... 수정될 것 같은 AlarmScreen'),);
+    return Center(child: Container(child: Text('없어지거나 ... 수정될 것 같은 AlarmScreen'),));
   }
 }
