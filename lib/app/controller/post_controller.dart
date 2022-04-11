@@ -3,6 +3,7 @@ import 'package:uni_meet_dong/app/data/model/post_model.dart';
 import 'package:uni_meet_dong/app/data/repository/post_repository.dart';
 
 class PostController extends GetxController{
+  static PostController get to => Get.find();
   RxList<PostModel> postList = <PostModel>[].obs;
 
   @override

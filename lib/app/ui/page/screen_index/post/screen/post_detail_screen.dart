@@ -1,27 +1,34 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get.dart';
-import 'package:uni_meet_dong/app/binding/init_bindings.dart';
 import 'package:uni_meet_dong/app/controller/auth_controller.dart';
 import 'package:uni_meet_dong/app/controller/comment_controller.dart';
-import 'package:uni_meet_dong/app/data/model/chat_model.dart';
 import 'package:uni_meet_dong/app/data/model/chatroom_model.dart';
 import 'package:uni_meet_dong/app/data/model/comment_model.dart';
 import 'package:uni_meet_dong/app/data/model/post_model.dart';
 import 'package:uni_meet_dong/app/data/repository/chat_repository.dart';
 import 'package:uni_meet_dong/app/data/repository/comment_repository.dart';
+import 'package:uni_meet_dong/app/ui/components/input_bar.dart';
 
-class PostDetailScreen extends GetView<CommentController> {
+class PostDetailScreen extends StatefulWidget {
+
+  // commentController 쓰려다가 귀찮아서 그냥 넘김 나중에 유지보수때 건드릴 예정...ㅋㅋ
+
   final PostModel post;
 
   PostDetailScreen({required this.post, Key? key}) : super(key: key);
 
   @override
+  State<PostDetailScreen> createState() => _PostDetailScreenState();
+}
+
+class _PostDetailScreenState extends State<PostDetailScreen> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: FutureBuilder<List<CommentModel>>(
-          future: commentRepository.loadCommentList(post.postKey),
+          future: commentRepository.loadCommentList(widget.post.postKey),
           initialData: [
             CommentModel(
                 host: 'nothing',
@@ -29,47 +36,47 @@ class PostDetailScreen extends GetView<CommentController> {
                 commentTime: DateTime.now())
           ],
           builder: (context, snapshot) {
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _intro();
-                } else if (index == 1) {
-                  return _content();
-                } else {
-                  return _comment(snapshot);
-                }
-              },
-              itemCount: 3,
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return _intro();
+                      } else if (index == 1) {
+                        return _content();
+                      } else {
+                        return _comment(snapshot);
+                      }
+                    },
+                    itemCount: 3,
+                  ),
+                ),
+                widget.post.host != AuthController.to.user.value.uid ? InputBar(
+                    textEditingController: CommentController.to.commentTextController,
+                    icon: Icon(CupertinoIcons.arrow_up_circle),
+                    onPress: onPress,
+                    hintText: "댓글을 남겨주세요."):SizedBox.shrink()
+              ],
             );
           }),
-      bottomNavigationBar: post.host != AuthController.to.user.value.uid
-          ? SizedBox(
-              height: 100,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller.commentTextController,
-                    ),
-                  ),
-                  TextButton(
-                      onPressed: () async {
-                        CommentModel comment = CommentModel(
-                          host: AuthController.to.user.value.uid,
-                          content: controller.commentTextController.text,
-                          commentTime: DateTime.now(),
-                        );
-                        await commentRepository.createNewComment(
-                            post.postKey, comment.toMap());
-                        // 화면 새로고침
-                        controller.commentTextController.text = '';
-                      },
-                      child: Text('코멘트 남기기')),
-                ],
-              ),
-            )
-          : SizedBox(),
     );
+  }
+
+  void onPress() async {
+    CommentModel comment = CommentModel(
+      host: AuthController.to.user.value.uid,
+      content: CommentController.to.commentTextController.text,
+      commentTime: DateTime.now(),
+    );
+    await commentRepository.createNewComment(
+        widget.post.postKey, comment.toMap());
+    // 화면 새로고침
+
+    CommentController.to.commentTextController.clear();
+    setState(() {
+
+    });
   }
 
   Column _comment(AsyncSnapshot<List<CommentModel>> snapshot) {
@@ -78,10 +85,9 @@ class PostDetailScreen extends GetView<CommentController> {
           snapshot.data!.length,
           (index) => SizedBox(
               width: double.infinity,
-              height: 50,
               child: GestureDetector(
                   onTap: () {
-                    showDialog(
+                    snapshot.data![index].host != AuthController.to.user.value.uid ? showDialog(
                         context: Get.context!,
                         //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
                         barrierDismissible: false,
@@ -110,19 +116,28 @@ class PostDetailScreen extends GetView<CommentController> {
                               TextButton(
                                 child: const Text("채팅하기"),
                                 onPressed: () async {
-                                  if(AuthController.to.user.value.uid == post.host && snapshot.data![index].host != null && snapshot.data![index].host != '') {
-                                    await ChatRepository().createNewChatroom(ChatroomModel(
-                                        allUser: [
-                                          post.host!,
-                                          snapshot.data![index].host!
-                                        ],
-                                        createDate: DateTime.now(),
-                                        postKey: post.postKey,
-                                        headCount: post.headCount, postTitle: post.title, lastMessage: '',
-                                        chatId: '', lastMessageTime: DateTime.now()),
-                                        AuthController.to.user.value.uid!, snapshot.data![index].host!,     // 탈퇴했을때... 경우를 고려해줘야함
+                                  if (AuthController.to.user.value.uid ==
+                                          widget.post.host &&
+                                      snapshot.data![index].host != null &&
+                                      snapshot.data![index].host != '') {
+                                    await ChatRepository().createNewChatroom(
+                                      ChatroomModel(
+                                          allUser: [
+                                            widget.post.host!,
+                                            snapshot.data![index].host!
+                                          ],
+                                          createDate: DateTime.now(),
+                                          postKey: widget.post.postKey,
+                                          headCount: widget.post.headCount,
+                                          postTitle: widget.post.title,
+                                          lastMessage: '',
+                                          chatId: '',
+                                          lastMessageTime: DateTime.now()),
+                                      AuthController.to.user.value.uid!,
+                                      snapshot.data![index]
+                                          .host!, // 탈퇴했을때... 경우를 고려해줘야함
                                     );
-                                  }else{
+                                  } else {
                                     Get.snackbar("알림", "회원이 탈퇴했습니다.");
                                   }
 
@@ -133,14 +148,30 @@ class PostDetailScreen extends GetView<CommentController> {
                                 child: const Text("취소"),
                                 onPressed: () {
                                   Get.back();
-
                                 },
                               )
                             ],
                           );
-                        });
+                        }):print('본인이 작성');
                   },
-                  child: Card(child: Text(snapshot.data![index].content!))))),
+                  child: Card(child: Row(
+                    children: [
+                      Icon(Icons.person),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(snapshot.data![index].host!,overflow: TextOverflow.ellipsis,),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(snapshot.data![index].content!),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ))))),
     );
   }
 

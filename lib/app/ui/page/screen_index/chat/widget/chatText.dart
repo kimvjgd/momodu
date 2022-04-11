@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:uni_meet_dong/app/data/model/chat_model.dart';
 
 const roundedCorner = Radius.circular(20);
 
 class ChatText extends StatelessWidget {
   final Size size;
   final bool isMine;
-  // final ChatModel chatModel;
+  final ChatModel chatModel;
 
   const ChatText(
       {Key? key,
       required this.size,
       required this.isMine,
-      // required this.chatModel,
+      required this.chatModel,
       })
       : super(key: key);
 
@@ -34,7 +35,7 @@ class ChatText extends StatelessWidget {
           children: [
             Container(
               child: Text(
-                '죽는 날까지 하늘을 우러러 한 점 부끄럼이 없기를 잎새에 이는 바람에도 나는 괴로워했다. 별을 노래하는 마음으로 모든 죽어가는 것을 사랑해야지 그리고 나한테 주어진 길을 걸어가야겠다.오늘 밤에도 별이 바람에 스치운다.',
+                chatModel.message??'메세지 가려짐',
                 style: Theme.of(context)
                     .textTheme
                     .bodyText1!
@@ -73,7 +74,7 @@ class ChatText extends StatelessWidget {
         ),
         Container(
           child: Text(
-            '동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁화 삼천리',
+            chatModel.message??'메세지 가려짐',
             style: Theme.of(context)
                 .textTheme
                 .bodyText1!

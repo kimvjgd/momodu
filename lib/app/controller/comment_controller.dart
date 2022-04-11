@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 class CommentController extends GetxController {
 
+  static CommentController get to => Get.find();
+
     TextEditingController commentTextController = TextEditingController();
 
   // @override

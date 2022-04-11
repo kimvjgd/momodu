@@ -32,14 +32,14 @@ class ChatRepository {
             .collection(COLLECTION_USERS)
             .doc(commentUserId);
 
-    var chatData = await chatroomReference
-        .collection(COLLECTION_CHATS)
-        .doc()
-        .set(ChatModel(
-                writer: '관리자',
-                createdDate: DateTime.now(),
-                message: '첫 메세지를 보내주세요.')
-            .toMap());
+    var chatRef = await chatroomReference.collection(COLLECTION_CHATS).doc();
+
+    var chatData = chatRef.set(ChatModel(
+            writer: '관리자',
+            createdDate: DateTime.now(),
+            message: '첫 메세지를 보내주세요.',
+            reference: chatRef)
+        .toMap());
     var postUserData = await postUserReference.get();
     var commentUserData = await commentUserReference.get();
 
@@ -107,12 +107,15 @@ class ChatRepository {
     // await chatsReference.set(chat.toMap());
 
     await FirebaseFirestore.instance.runTransaction((transaction) async {
+      chat.reference = chatsReference;
       transaction.set(chatsReference, chat.toMap());
       transaction.update(chatroomReference, {
         KEY_CHATROOM_LASTMESSAGE: chat.message,
         KEY_CHATROOM_LASTMESSAGETIME: DateTime.now()
       });
     });
+    Logger().d(chat.reference);
+    Logger().d(chat.reference!.id);
   }
 
   Stream<ChatroomModel> connectChatroom(String chatroomKey) {
@@ -136,13 +139,13 @@ class ChatRepository {
         .collection(COLLECTION_CHATROOMS)
         .doc(chatroomKey)
         .collection(COLLECTION_CHATS)
-        .orderBy(KEY_CHAT_CREATEDDATE,descending: true)
+        .orderBy(KEY_CHAT_CREATEDDATE, descending: true)
         .limit(15)
         .get();
     List<ChatModel> chatList = [];
     snapshot.docs.forEach((docSnapshot) {
-      // DocumentReference chatRef = docSnapshot.refernce;
-      ChatModel chat = ChatModel.fromJson(docSnapshot.data());
+      DocumentReference chatRef = docSnapshot.reference;
+      ChatModel chat = ChatModel.fromJson(docSnapshot.data(), chatRef);
       chatList.add(chat);
     });
     return chatList;
@@ -155,12 +158,14 @@ class ChatRepository {
         .collection(COLLECTION_CHATROOMS)
         .doc(chatroomKey)
         .collection(COLLECTION_CHATS)
-        .endBeforeDocument(await currentLatestChatRef.get())      // endAtDocumentㅇㅣㄴ가...?
-        .orderBy(KEY_CHAT_CREATEDDATE,descending: true)
+        .orderBy(KEY_CHAT_CREATEDDATE, descending: true)
+        .endBeforeDocument(
+            await currentLatestChatRef.get()) // endAtDocumentㅇㅣㄴ가...?
         .get();
     List<ChatModel> chatList = [];
     snapshot.docs.forEach((docSnapshot) {
-      ChatModel chat = ChatModel.fromJson(docSnapshot.data());
+      DocumentReference chatRef = docSnapshot.reference;
+      ChatModel chat = ChatModel.fromJson(docSnapshot.data(), chatRef);
       chatList.add(chat);
     });
     return chatList;
@@ -173,16 +178,30 @@ class ChatRepository {
         .collection(COLLECTION_CHATROOMS)
         .doc(chatroomKey)
         .collection(COLLECTION_CHATS)
+        .orderBy(KEY_CHAT_CREATEDDATE, descending: true)
         .startAfterDocument(await oldestChatRef.get())
-        .orderBy(KEY_CHAT_CREATEDDATE,descending: true)
         .limit(10)
         .get();
     List<ChatModel> chatList = [];
     snapshot.docs.forEach((docSnapshot) {
-      ChatModel chat = ChatModel.fromJson(docSnapshot.data());
+      DocumentReference chatRef = docSnapshot.reference;
+      ChatModel chat = ChatModel.fromJson(docSnapshot.data(), chatRef);
       chatList.add(chat);
     });
     return chatList;
   }
 
+  Future<List<ChatroomModel>> getMyChatList(String myUid) async {
+    List<ChatroomModel> chatrooms = [];
+    QuerySnapshot<Map<String, dynamic>> list = await FirebaseFirestore.instance
+        .collection(COLLECTION_CHATROOMS)
+        .where(KEY_CHATROOM_ALLUSER, arrayContains: myUid)
+        .get();
+
+    list.docs.forEach((documentSnapshot) {
+      chatrooms.add(ChatroomModel.fromJson(documentSnapshot.data()));
+    });
+    Logger().d(chatrooms);
+    return chatrooms;
+  }
 }

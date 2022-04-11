@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:uni_meet_dong/app/controller/auth_controller.dart';
 import 'package:uni_meet_dong/app/controller/bottom_nav_controller.dart';
+import 'package:uni_meet_dong/app/controller/chat_controller.dart';
 import 'package:uni_meet_dong/app/controller/chatroom_controller.dart';
 import 'package:uni_meet_dong/app/controller/comment_controller.dart';
 import 'package:uni_meet_dong/app/controller/post_controller.dart';
@@ -28,4 +29,9 @@ class InitBinding extends Bindings {
     // Get.put(CommentController(),permanent: false);
     Get.lazyPut(() => CommentController());
   }
+
+  static chatroomBinding(String chatroomKey) {
+    Get.lazyPut(() => ChatController(chatroomKey));
+  }
+
 }

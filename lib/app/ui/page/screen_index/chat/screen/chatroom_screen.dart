@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:uni_meet_dong/app/controller/auth_controller.dart';
+import 'package:uni_meet_dong/app/controller/chat_controller.dart';
 import 'package:uni_meet_dong/app/data/model/chat_model.dart';
 import 'package:uni_meet_dong/app/data/repository/chat_repository.dart';
+import 'package:uni_meet_dong/app/ui/components/input_bar.dart';
 import 'package:uni_meet_dong/app/ui/page/screen_index/chat/widget/chatText.dart';
 
 class ChatroomScreen extends StatefulWidget {
   String chatroomKey;
+
   ChatroomScreen({required this.chatroomKey, Key? key}) : super(key: key);
 
   @override
@@ -21,6 +25,7 @@ class _ChatroomScreenState extends State<ChatroomScreen> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -31,80 +36,67 @@ class _ChatroomScreenState extends State<ChatroomScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              MaterialBanner(
-                  padding: EdgeInsets.zero,
-                  content: Column(
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.wysiwyg),
-                        title: RichText(
-                          text: TextSpan(
-                              text: '신촌에서 3:3 술마실분?   ',
-                              style: TextStyle(color: Colors.black),
-                              children: [
-                                TextSpan(
-                                  text: '2022/04/11',
-                                )
-                              ]),
-                        ),
-                      )
-                    ],
-                  ),
-                  actions: [Container()]),
+              _postInfo(),
               Expanded(
                   child: Container(
                 color: Colors.white,
-                child: ListView.separated(
+                child: Obx(() => ListView.separated(
+                    reverse: true,
                     itemBuilder: (context, index) {
-                      return ChatText(size: _size, isMine: index%3==1?true:false);
+                      bool isMine =
+                          ChatController.to.chat_chatList.value[index].writer ==
+                              AuthController.to.user.value.uid;
+                      return ChatText(
+                        size: _size,
+                        isMine: isMine,
+                        chatModel: ChatController.to.chat_chatList.value[index],
+                      );
                     },
                     separatorBuilder: (context, index) {
-                      return SizedBox(
+                      return const SizedBox(
                         height: 3,
                       );
                     },
-                    itemCount: 30),
+                    itemCount: ChatController.to.chat_chatList.value.length)),
               )),
-              _buildInputBar()
+              InputBar(textEditingController: _chatController, icon: Icon(Icons.send), onPress: onPress, hintText: '메세지를 입력하세요.')
             ],
           ),
         ),
       );
     });
   }
+  Future<void> onPress() async {
+    ChatModel chat = ChatModel(
+      writer: AuthController.to.user.value.uid,
+      message: _chatController.text,
+      createdDate: DateTime.now(),
+    ); // 여기서 에러?
+    // await ChatRepository().createNewChat(widget.chatroomKey, chat);
+    ChatController.to.addNewChat(chat);
+    _chatController.clear();
+  }
 
-  Row _buildInputBar() {
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: TextFormField(
-              controller: _chatController,
-              decoration: InputDecoration(
-                  hintText: '메세지를 입력하세요.',
-                  isDense: true,
-                  fillColor: Colors.white,
-                  filled: true,
-                  contentPadding: EdgeInsets.all(10),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(color: Colors.grey))),
-            ),
-          ),
+  MaterialBanner _postInfo() {
+    return MaterialBanner(
+        padding: EdgeInsets.zero,
+        content: Column(
+          children: [
+            ListTile(
+              leading: Icon(Icons.wysiwyg),
+              title: RichText(
+                text: TextSpan(
+                    text: '신촌에서 3:3 술마실분?   ',
+                    style: TextStyle(color: Colors.black),
+                    children: [
+                      TextSpan(
+                        text: '2022/04/11',
+                      )
+                    ]),
+              ),
+            )
+          ],
         ),
-        IconButton(
-            onPressed: () async {
-              ChatModel chat = ChatModel(writer: AuthController.to.user.value.uid, message: _chatController.text, createdDate: DateTime.now());
-              await ChatRepository().createNewChat(widget.chatroomKey, chat);
-
-              _chatController.clear();
-            },
-            icon: Icon(
-              Icons.send,
-              color: Colors.grey,
-            )),
-      ],
-    );
+        actions: [Container()]);
   }
 }

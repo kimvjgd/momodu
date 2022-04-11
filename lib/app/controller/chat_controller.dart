@@ -4,27 +4,61 @@ import 'package:uni_meet_dong/app/data/model/chatroom_model.dart';
 import 'package:uni_meet_dong/app/data/repository/chat_repository.dart';
 
 class ChatController extends GetxController {
-  // late ChatroomModel _chatroomModel;
-  late Rx<ChatroomModel> _chatroomModel;
-  RxList<ChatModel> _chatList = <ChatModel>[].obs;
-  late RxString _chatroomKey;
+  ChatController(this.chatroomKey);
 
-  @override
-  void onInit() {     // be careful
-    ChatRepository().connectChatroom(_chatroomKey.value).listen((chatroomModel) {
-      _chatroomModel(chatroomModel);
+  static ChatController get to => Get.find();
 
-      if(_chatList.value.isEmpty){
-        ChatRepository().getChatList(_chatroomKey.value).then((chatList) {
-          _chatList.value.addAll(chatList);
+  Rx<ChatroomModel> chat_chatroomModel = ChatroomModel(
+          allUser: [],
+          createDate: DateTime.now(),
+          chatId: '',
+          postKey: '',
+          postTitle: '',
+          lastMessage: '',
+          lastMessageTime: DateTime.now(),
+          headCount: 1)
+      .obs;
+  RxList<ChatModel> chat_chatList = <ChatModel>[].obs;
+  final String chatroomKey;
+  RxString chat_chatroomKey = ''.obs;
 
-        });
-      }else {
-        ChatRepository().getLatestChatList(_chatroomKey.value, _chatList[0]);
-      }
-
-    });
-    super.onInit();
+  void getxConstructor() {
+    chat_chatroomKey.value = chatroomKey;
   }
 
+  void addNewChat(ChatModel chatModel) {
+    chat_chatList.insert(0, chatModel);
+    ChatRepository().createNewChat(chat_chatroomKey.value, chatModel);
+
+  }
+
+
+  @override
+  void onInit() {
+    super.onInit();
+    getxConstructor();
+    ChatRepository()
+        .connectChatroom(chat_chatroomKey.value)
+        .listen((chatroomModel) {
+      chat_chatroomModel(chatroomModel);
+
+      if (chat_chatList.isEmpty) {
+        ChatRepository().getChatList(chat_chatroomKey.value).then((chatList) {
+          chat_chatList.addAll(chatList);
+        });
+      } else {
+        if (chat_chatList[0].reference == null){
+          chat_chatList.removeAt(0);
+        }
+        ChatRepository()
+            .getLatestChatList(
+                chat_chatroomKey.value, chat_chatList[0].reference!)
+            .then((latestChats) {
+
+          chat_chatList.insertAll(0, latestChats);
+          update();
+        });
+      }
+    });
+  }
 }

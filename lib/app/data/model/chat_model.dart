@@ -5,13 +5,13 @@ class ChatModel {
   String? writer;
   String? message;
   DateTime? createdDate;
-  // DocumentReference? reference;
+  DocumentReference? reference;
 
   ChatModel(
       {required this.writer,
       required this.message,
       required this.createdDate,
-      // required reference,
+      this.reference,
       });
 
   factory ChatModel.fromJson(
@@ -24,8 +24,8 @@ class ChatModel {
           : json[KEY_CHAT_MESSAGE] as String,
       createdDate: json[KEY_CHAT_CREATEDDATE] == null
           ? DateTime.now()
-          : json[KEY_CHAT_CREATEDDATE] as DateTime,
-      // reference: reference,
+          : json[KEY_CHAT_CREATEDDATE].toDate(),
+      reference: reference,
     );
   }
 
