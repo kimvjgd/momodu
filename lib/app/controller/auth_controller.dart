@@ -4,32 +4,31 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_meet_dong/app/binding/init_bindings.dart';
-import 'package:uni_meet_dong/app/data/model/app_user.dart';
+import 'package:uni_meet_dong/app/data/model/app_user_model.dart';
 import 'package:uni_meet_dong/app/data/repository/user_repository.dart';
 
 class AuthController extends GetxController {
   static AuthController get to => Get.find();
 
-  Rx<AppUser> user = AppUser().obs;
+  Rx<AppUserModel> user = AppUserModel().obs;
   RxString name = ''.obs;
 
   void signOut() {
-    user.value = AppUser();
+    user.value = AppUserModel();
   }
 
 
-  Future<AppUser?> loginUser(String uid) async {
+  Future<AppUserModel?> loginUser(String uid) async {
     var userData = await UserRepository.loginUserByUid(uid);
     if(userData != null){
       user(userData);
-      // TODO add other binding here
       InitBinding.additionalBinding();
     }
     return userData;
   }
 
   void changeAge(value) {
-    user(AppUser(age: value));
+    user(AppUserModel(age: value));
     // user.value.age = value;
   }
 
@@ -37,7 +36,7 @@ class AuthController extends GetxController {
 
   }
 
-  void signup(AppUser signupUser, XFile? thumbnail) async {
+  void signup(AppUserModel signupUser, XFile? thumbnail) async {
     if(thumbnail==null){
       _submitSignup(signupUser);
     }else {
@@ -64,7 +63,7 @@ class AuthController extends GetxController {
     return ref.putFile(f,metadata);
   }
 
-  void _submitSignup(AppUser signupUser)async {
+  void _submitSignup(AppUserModel signupUser)async {
     var result = await UserRepository.signup(signupUser);
     if(result){
       loginUser(signupUser.uid!);

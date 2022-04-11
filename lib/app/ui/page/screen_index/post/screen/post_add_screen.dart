@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:uni_meet_dong/app/controller/auth_controller.dart';
-import 'package:uni_meet_dong/app/data/model/post.dart';
+import 'package:uni_meet_dong/app/data/model/post_model.dart';
 import 'package:uni_meet_dong/app/data/repository/post_repository.dart';
 
 class PostAddScreen extends StatefulWidget {
@@ -13,7 +13,6 @@ class PostAddScreen extends StatefulWidget {
 }
 
 class _PostAddScreenState extends State<PostAddScreen> {
-  var logger = Logger();
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _contentController = TextEditingController();
@@ -66,14 +65,11 @@ class _PostAddScreenState extends State<PostAddScreen> {
               width: 300,
               child: ElevatedButton(
                   onPressed: () async {
-                    logger.d("${_titleController.text} && ${_contentController
-                        .text}");
                     await PostRepository.createPost(title: _titleController.text,
                         content: _contentController.text,
                         place: '신촌',
                         headCount: 3,
                         createdDate: DateTime.now(),
-                        commentList: [],
                         host: AuthController.to.user.value.uid!,
                     );
                     Get.back();

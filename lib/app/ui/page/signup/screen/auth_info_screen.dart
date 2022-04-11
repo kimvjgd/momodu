@@ -2,9 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
 import 'package:uni_meet_dong/app/controller/auth_controller.dart';
-import 'package:uni_meet_dong/app/data/model/app_user.dart';
+import 'package:uni_meet_dong/app/data/model/app_user_model.dart';
 import 'package:uni_meet_dong/app/data/repository/user_repository.dart';
 import 'package:uni_meet_dong/app/ui/page/signup/screen/profile_image_screen.dart';
 import 'package:uni_meet_dong/app/ui/page/signup/widget/age_bottom_sheet.dart';
@@ -27,7 +26,6 @@ class AuthInfoScreen extends StatefulWidget {
 }
 
 class _AuthInfoScreenState extends State<AuthInfoScreen> {
-  var logger = Logger();
 
   var _isChecked = false;
 
@@ -97,7 +95,7 @@ class _AuthInfoScreenState extends State<AuthInfoScreen> {
 
   void onPressed() async {
     if (_formKey.currentState!.validate()) {
-      var signupUser = AppUser(
+      var signupUser = AppUserModel(
           uid: widget.uid,
           name: _nickNameController.text,
           major: _majorController.text,
@@ -112,7 +110,6 @@ class _AuthInfoScreenState extends State<AuthInfoScreen> {
 
     //  Get.to(ProfileImageScreen());
     } else {
-      logger.d('입력 실패!');
     }
   }
 

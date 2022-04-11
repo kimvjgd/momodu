@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uni_meet_dong/app/controller/auth_controller.dart';
-import 'package:uni_meet_dong/app/data/model/app_user.dart';
+import 'package:uni_meet_dong/app/data/model/app_user_model.dart';
 import 'package:uni_meet_dong/root_page.dart';
 
 class SettingScreen extends StatefulWidget {

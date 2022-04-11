@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uni_meet_dong/app/data/model/firestore_keys.dart';
 
-class Post {
+class PostModel {
  final String postKey;
  final String? host;
  final String? place;
@@ -10,14 +10,13 @@ class Post {
  final DateTime? createdDate;
  final int numComments;
  final String? content;
- final List<dynamic>? commentList;
  // final DocumentReference reference;
 
-  Post(
-      {required this.postKey, required this.host, required this.place, required this.numComments,required this.headCount, required this.title, required this.createdDate, required this.content, required this.commentList});
+  PostModel(
+      {required this.postKey, required this.host, required this.place, required this.numComments,required this.headCount, required this.title, required this.createdDate, required this.content});
 
-  factory Post.fromJson(String docId,Map<String, dynamic> json){
-    return Post(
+  factory PostModel.fromJson(String docId,Map<String, dynamic> json){
+    return PostModel(
       postKey: json[KEY_POST_POSYKEY] == null ? '' : json[KEY_POST_POSYKEY] as String,
       host: json[KEY_POST_HOST] == null ? '' : json[KEY_POST_HOST] as String,
       place: json[KEY_POST_PLACE] == null ? '' : json[KEY_POST_PLACE] as String,
@@ -26,7 +25,6 @@ class Post {
       createdDate: json[KEY_POST_CREATEDDATE] == null ? DateTime.now() : json[KEY_POST_CREATEDDATE].toDate(),
       content: json[KEY_POST_CONTENT] == null ? '' : json[KEY_POST_CONTENT] as String,
       numComments: json[KEY_POST_NUMCOMMENTS] == null ? 0 : json[KEY_POST_NUMCOMMENTS] as int,
-      commentList: json[KEY_POST_COMMENTLIST] == null ? [] : json[KEY_POST_COMMENTLIST] as List<dynamic>,
     );
   }
 
@@ -40,11 +38,10 @@ class Post {
       KEY_POST_CREATEDDATE: createdDate,
       KEY_POST_CONTENT: content,
       KEY_POST_NUMCOMMENTS: numComments,
-      KEY_POST_COMMENTLIST: commentList,
     };
   }
 
-  Post copyWith({
+  PostModel copyWith({
     String? postKey,
     String? host,
     String? place,
@@ -53,9 +50,8 @@ class Post {
     DateTime? createdDate,
     int? numComments,
     String? content,
-    List<dynamic>? commentList,
 }){
-    return Post(
+    return PostModel(
         postKey : postKey ?? this.postKey,
         host : host ?? this.host,
         place : place ?? this.place,
@@ -64,7 +60,6 @@ class Post {
         createdDate : createdDate ?? this.createdDate,
         numComments: numComments ?? this.numComments,
         content : content ?? this.content,
-        commentList : commentList ?? this.commentList,
     );
   }
 }

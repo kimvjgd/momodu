@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:uni_meet_dong/app/binding/init_bindings.dart';
+import 'package:uni_meet_dong/app/controller/comment_controller.dart';
 import 'package:uni_meet_dong/app/controller/post_controller.dart';
 import 'package:uni_meet_dong/app/ui/components/app_color.dart';
 import 'package:uni_meet_dong/app/ui/page/screen_index/post/screen/post_add_screen.dart';
@@ -21,8 +23,8 @@ class PostScreen extends GetView<PostController> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: app_color,
-        actions: [IconButton(onPressed: (){
-          Get.to(PostAddScreen());
+        actions: [IconButton(onPressed: () {
+          Get.to(PostAddScreen(),);
         }, icon: Icon(Icons.add,color: Colors.black,))],
       ),
       body: RefreshIndicator(

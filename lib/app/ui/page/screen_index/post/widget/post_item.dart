@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:uni_meet_dong/app/data/model/post.dart';
+import 'package:uni_meet_dong/app/binding/init_bindings.dart';
+import 'package:uni_meet_dong/app/data/model/post_model.dart';
 import 'package:uni_meet_dong/app/data/utils/timeago_util.dart';
 import 'package:uni_meet_dong/app/ui/page/screen_index/post/screen/post_detail_screen.dart';
 
 
 class PostItem extends StatelessWidget {
-  final Post post;
+  final PostModel post;
   const PostItem({
     required this.post,
     Key? key}) : super(key: key);
@@ -19,7 +20,8 @@ class PostItem extends StatelessWidget {
       height: MediaQuery.of(context).size.height/10,
       child: GestureDetector(
         onTap: (){
-          Get.to(()=>PostDetailScreen(post: post,));
+          InitBinding.commentBinding();
+          Get.to(()=>PostDetailScreen(post: post));
         },
         child: Card(
           child: Column(
